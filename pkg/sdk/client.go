@@ -33,6 +33,7 @@ type Client struct {
 	Comments                     Comments
 	ComputePools                 ComputePools
 	Connections                  Connections
+	Contacts                     Contacts
 	CortexSearchServices         CortexSearchServices
 	DatabaseRoles                DatabaseRoles
 	Databases                    Databases
@@ -162,6 +163,7 @@ func (c *Client) initialize() {
 	c.Comments = &comments{client: c}
 	c.ComputePools = &computePools{client: c}
 	c.Connections = &connections{client: c}
+	c.Contacts = &contacts{client: c}
 	c.ContextFunctions = &contextFunctions{client: c}
 	c.CortexSearchServices = &cortexSearchServices{client: c}
 	c.DatabaseRoles = &databaseRoles{client: c}
