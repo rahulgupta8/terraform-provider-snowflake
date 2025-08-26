@@ -42,23 +42,23 @@ type DropContactRequest struct {
 
 // createContactOptions is based on https://docs.snowflake.com/en/user-guide/contacts-using
 type createContactOptions struct {
-	create      bool                     `ddl:"static" sql:"CREATE"`
-	OrReplace   *bool                    `ddl:"keyword" sql:"OR REPLACE"`
-	contact     string                   `ddl:"static" sql:"CONTACT"`
-	IfNotExists *bool                    `ddl:"keyword" sql:"IF NOT EXISTS"`
-	name        AccountObjectIdentifier  `ddl:"identifier"`
-	Email       *string                  `ddl:"parameter,single_quotes" sql:"EMAIL"`
-	Comment     *string                  `ddl:"parameter,single_quotes" sql:"COMMENT"`
+	create      bool                    `ddl:"static" sql:"CREATE"`
+	OrReplace   *bool                   `ddl:"keyword" sql:"OR REPLACE"`
+	contact     string                  `ddl:"static" sql:"CONTACT"`
+	IfNotExists *bool                   `ddl:"keyword" sql:"IF NOT EXISTS"`
+	name        AccountObjectIdentifier `ddl:"identifier"`
+	Email       *string                 `ddl:"parameter,single_quotes" sql:"EMAIL"`
+	Comment     *string                 `ddl:"parameter,single_quotes" sql:"COMMENT"`
 }
 
 type alterContactOptions struct {
-	alter       bool                     `ddl:"static" sql:"ALTER"`
-	contact     string                   `ddl:"static" sql:"CONTACT"`
-	IfExists    *bool                    `ddl:"keyword" sql:"IF EXISTS"`
-	name        AccountObjectIdentifier  `ddl:"identifier"`
-	Set         *ContactSet              `ddl:"keyword" sql:"SET"`
-	Unset       *ContactUnset            `ddl:"keyword" sql:"UNSET"`
-	Rename      *ContactRename           `ddl:"keyword" sql:"RENAME TO"`
+	alter    bool                    `ddl:"static" sql:"ALTER"`
+	contact  string                  `ddl:"static" sql:"CONTACT"`
+	IfExists *bool                   `ddl:"keyword" sql:"IF EXISTS"`
+	name     AccountObjectIdentifier `ddl:"identifier"`
+	Set      *ContactSet             `ddl:"keyword" sql:"SET"`
+	Unset    *ContactUnset           `ddl:"keyword" sql:"UNSET"`
+	Rename   *ContactRename          `ddl:"keyword" sql:"RENAME TO"`
 }
 
 type ContactSet struct {
@@ -84,10 +84,10 @@ type showContactOptions struct {
 
 // dropContactOptions is based on https://docs.snowflake.com/en/sql-reference/sql/drop-contact
 type dropContactOptions struct {
-	drop     bool                     `ddl:"static" sql:"DROP"`
-	contact  string                   `ddl:"static" sql:"CONTACT"`
-	IfExists *bool                    `ddl:"keyword" sql:"IF EXISTS"`
-	name     AccountObjectIdentifier  `ddl:"identifier"`
+	drop     bool                    `ddl:"static" sql:"DROP"`
+	contact  string                  `ddl:"static" sql:"CONTACT"`
+	IfExists *bool                   `ddl:"keyword" sql:"IF EXISTS"`
+	name     AccountObjectIdentifier `ddl:"identifier"`
 }
 
 type Contact struct {
