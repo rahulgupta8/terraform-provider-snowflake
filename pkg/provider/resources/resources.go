@@ -15,6 +15,7 @@ const (
 	ApiIntegration                                         resource = "snowflake_api_integration"
 	AuthenticationPolicy                                   resource = "snowflake_authentication_policy"
 	ComputePool                                            resource = "snowflake_compute_pool"
+	Contact                                                resource = "snowflake_contact"
 	CortexSearchService                                    resource = "snowflake_cortex_search_service"
 	CurrentAccount                                         resource = "snowflake_current_account"
 	CurrentOrganizationAccount                             resource = "snowflake_current_organization_account"
