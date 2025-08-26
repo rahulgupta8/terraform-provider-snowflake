@@ -2,6 +2,7 @@ package testacc
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/Snowflake-Labs/terraform-provider-snowflake/pkg/acceptance/helpers/random"
@@ -201,6 +202,76 @@ func TestAcc_Contact_import(t *testing.T) {
 	})
 }
 
+func TestAcc_Contact_duplicateName(t *testing.T) {
+	contactName := random.AlphaN(8)
+
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: TestAccProtoV6ProviderFactories,
+		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+			tfversion.RequireAbove(tfversion.Version1_5_0),
+		},
+		PreCheck:     func() { TestAccPreCheck(t) },
+		CheckDestroy: CheckDestroy(t, resources.Contact),
+		Steps: []resource.TestStep{
+			{
+				Config: contactDuplicateConfig(contactName),
+				ExpectError: regexp.MustCompile("already exists|object .* already exists"),
+			},
+		},
+	})
+}
+
+func TestAcc_Contact_invalidEmail(t *testing.T) {
+	contactName := random.AlphaN(8)
+	invalidEmail := "invalid-email-format"
+
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: TestAccProtoV6ProviderFactories,
+		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+			tfversion.RequireAbove(tfversion.Version1_5_0),
+		},
+		PreCheck:     func() { TestAccPreCheck(t) },
+		CheckDestroy: CheckDestroy(t, resources.Contact),
+		Steps: []resource.TestStep{
+			{
+				Config: contactConfig(contactName, invalidEmail, "test comment"),
+				// Note: Snowflake may not validate email format at creation time
+				// This test verifies that terraform can handle invalid email values
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("snowflake_contact.test", "name", contactName),
+					resource.TestCheckResourceAttr("snowflake_contact.test", "email", invalidEmail),
+				),
+			},
+		},
+	})
+}
+
+func TestAcc_Contact_specialCharacters(t *testing.T) {
+	contactName := random.AlphaN(8)
+	specialEmail := fmt.Sprintf("test.user+%s@sub-domain.example-site.co.uk", random.AlphaN(4))
+	specialComment := "Comment with special chars: áéíóú, ñ, ü, and symbols: @#$%^&*()"
+
+	resource.Test(t, resource.TestCase{
+		ProtoV6ProviderFactories: TestAccProtoV6ProviderFactories,
+		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+			tfversion.RequireAbove(tfversion.Version1_5_0),
+		},
+		PreCheck:     func() { TestAccPreCheck(t) },
+		CheckDestroy: CheckDestroy(t, resources.Contact),
+		Steps: []resource.TestStep{
+			{
+				Config: contactConfig(contactName, specialEmail, specialComment),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("snowflake_contact.test", "name", contactName),
+					resource.TestCheckResourceAttr("snowflake_contact.test", "email", specialEmail),
+					resource.TestCheckResourceAttr("snowflake_contact.test", "comment", specialComment),
+					resource.TestCheckResourceAttrSet("snowflake_contact.test", "fully_qualified_name"),
+				),
+			},
+		},
+	})
+}
+
 func contactConfig(name, email, comment string) string {
 	return fmt.Sprintf(`
 resource "snowflake_contact" "test" {
@@ -214,6 +285,18 @@ resource "snowflake_contact" "test" {
 func contactMinimalConfig(name string) string {
 	return fmt.Sprintf(`
 resource "snowflake_contact" "test" {
+  name = %[1]q
+}
+`, name)
+}
+
+func contactDuplicateConfig(name string) string {
+	return fmt.Sprintf(`
+resource "snowflake_contact" "test1" {
+  name = %[1]q
+}
+
+resource "snowflake_contact" "test2" {
   name = %[1]q
 }
 `, name)
