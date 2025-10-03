@@ -48,7 +48,9 @@ var contactSchema = map[string]*schema.Schema{
 func Contact() *schema.Resource {
 	deleteFunc := ResourceDeleteContextFunc(
 		sdk.ParseAccountObjectIdentifier,
-		func(client *sdk.Client) DropSafelyFunc[sdk.AccountObjectIdentifier] { return client.Contacts.DropSafely },
+		func(client *sdk.Client) DropSafelyFunc[sdk.AccountObjectIdentifier] {
+			return client.Contacts.DropSafely
+		},
 	)
 
 	return &schema.Resource{
