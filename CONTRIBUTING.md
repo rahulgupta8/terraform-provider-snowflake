@@ -16,6 +16,13 @@
   - [Requesting the review](#requesting-the-review)
 - [Advanced Debugging](#advanced-debugging)
 
+## Quick Start Guides
+
+If you're looking to contribute a specific type of change, check out these detailed guides:
+
+- **[Adding a New Resource](docs/guides/adding_a_new_resource.md)** - Comprehensive step-by-step guide for implementing a new Terraform resource
+- **[New Resource Checklist](docs/guides/new_resource_checklist.md)** - Quick reference checklist for adding resources
+
 ## Setting up the development environment
 
 1. Install Golang environment (check instructions on the official page https://go.dev/doc/install depending on you OS).
@@ -106,6 +113,8 @@ We believe that code following the same conventions is easier to maintain and ex
 ### Introducing a new part of the SDK
 
 To create new objects in our SDK we use quickly created generator that outputs the majority of the files needed. These files should be later edited and filled with the missing parts. We plan to improve the generator later on, but it should be enough for now. Please read more in the [generator readme](pkg/sdk/poc/README.md).
+
+**Looking to add a new resource?** Check out our [comprehensive guide for adding a new resource](docs/guides/adding_a_new_resource.md) that walks through the complete process from SDK generation to documentation.
 
 ### Test the change
 Every introduced change should be tested. Depending on the type of the change it may require (any or mix of):
