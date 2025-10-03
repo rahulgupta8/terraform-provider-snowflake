@@ -1,6 +1,9 @@
 package sdk
 
-import "context"
+import (
+	"context"
+	"database/sql"
+)
 
 type Contacts interface {
 	Create(ctx context.Context, request *CreateContactRequest) error
