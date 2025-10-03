@@ -50,8 +50,8 @@ func TestInt_Contacts(t *testing.T) {
 		comment := random.Comment()
 
 		request := sdk.NewCreateContactRequest(id, email).
-			WithComment(&comment).
-			WithIfNotExists(sdk.Bool(true))
+			WithComment(comment).
+			WithIfNotExists(true)
 
 		err := client.Contacts.Create(ctx, request)
 		require.NoError(t, err)
@@ -93,7 +93,7 @@ func TestInt_Contacts(t *testing.T) {
 	t.Run("drop contact: non-existing", func(t *testing.T) {
 		id := testClientHelper().Ids.RandomAccountObjectIdentifier()
 
-		err := client.Contacts.Drop(ctx, sdk.NewDropContactRequest(id).WithIfExists(sdk.Bool(true)))
+		err := client.Contacts.Drop(ctx, sdk.NewDropContactRequest(id).WithIfExists(true))
 		require.NoError(t, err)
 	})
 
@@ -103,7 +103,7 @@ func TestInt_Contacts(t *testing.T) {
 
 		newEmail := "updated@example.com"
 		alterRequest := sdk.NewAlterContactRequest(contact.ID()).WithSet(
-			sdk.NewContactSetRequest().WithEmail(&newEmail),
+			*sdk.NewContactSetRequest().WithEmail(newEmail),
 		)
 		err := client.Contacts.Alter(ctx, alterRequest)
 		require.NoError(t, err)
@@ -119,7 +119,7 @@ func TestInt_Contacts(t *testing.T) {
 
 		newComment := random.Comment()
 		alterRequest := sdk.NewAlterContactRequest(contact.ID()).WithSet(
-			sdk.NewContactSetRequest().WithComment(&newComment),
+			*sdk.NewContactSetRequest().WithComment(newComment),
 		)
 		err := client.Contacts.Alter(ctx, alterRequest)
 		require.NoError(t, err)
@@ -134,13 +134,13 @@ func TestInt_Contacts(t *testing.T) {
 		email := "unset@example.com"
 		comment := random.Comment()
 
-		request := sdk.NewCreateContactRequest(id, email).WithComment(&comment)
+		request := sdk.NewCreateContactRequest(id, email).WithComment(comment)
 		err := client.Contacts.Create(ctx, request)
 		require.NoError(t, err)
 		t.Cleanup(cleanupContactProvider(id))
 
 		alterRequest := sdk.NewAlterContactRequest(id).WithUnset(
-			sdk.NewContactUnsetRequest().WithComment(sdk.Bool(true)),
+			*sdk.NewContactUnsetRequest().WithComment(true),
 		)
 		err = client.Contacts.Alter(ctx, alterRequest)
 		require.NoError(t, err)
@@ -155,7 +155,7 @@ func TestInt_Contacts(t *testing.T) {
 		contact := createContact(t, email)
 
 		newId := testClientHelper().Ids.RandomAccountObjectIdentifier()
-		alterRequest := sdk.NewAlterContactRequest(contact.ID()).WithRenameTo(&newId)
+		alterRequest := sdk.NewAlterContactRequest(contact.ID()).WithRenameTo(newId)
 		err := client.Contacts.Alter(ctx, alterRequest)
 		require.NoError(t, err)
 		t.Cleanup(cleanupContactProvider(newId))
@@ -192,7 +192,8 @@ func TestInt_Contacts(t *testing.T) {
 		require.NoError(t, err)
 		t.Cleanup(cleanupContactProvider(id))
 
-		contacts, err := client.Contacts.Show(ctx, sdk.NewShowContactRequest().WithLike(&sdk.Like{Pattern: &id.name}))
+		pattern := id.Name()
+		contacts, err := client.Contacts.Show(ctx, sdk.NewShowContactRequest().WithLike(sdk.Like{Pattern: &pattern}))
 		require.NoError(t, err)
 
 		assert.Len(t, contacts, 1)

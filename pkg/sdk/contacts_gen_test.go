@@ -8,8 +8,8 @@ func TestContacts_Create(t *testing.T) {
 	// Minimal valid CreateContactOptions
 	defaultOpts := func() *CreateContactOptions {
 		return &CreateContactOptions{
-
-			name: id,
+			name:  id,
+			Email: "test@example.com",
 		}
 	}
 
@@ -25,7 +25,8 @@ func TestContacts_Create(t *testing.T) {
 
 	t.Run("validation: conflicting fields for [opts.IfNotExists opts.OrReplace]", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
+		opts.IfNotExists = Bool(true)
+		opts.OrReplace = Bool(true)
 		assertOptsInvalidJoinedErrors(t, opts, errOneOf("CreateContactOptions", "IfNotExists", "OrReplace"))
 	})
 
@@ -48,8 +49,8 @@ func TestContacts_Alter(t *testing.T) {
 	// Minimal valid AlterContactOptions
 	defaultOpts := func() *AlterContactOptions {
 		return &AlterContactOptions{
-
 			name: id,
+			Set:  &ContactSet{Email: String("new@example.com")},
 		}
 	}
 
@@ -59,44 +60,55 @@ func TestContacts_Alter(t *testing.T) {
 	})
 	t.Run("validation: valid identifier for [opts.name]", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
+		opts.name = emptyAccountObjectIdentifier
 		assertOptsInvalidJoinedErrors(t, opts, ErrInvalidObjectIdentifier)
 	})
 
 	t.Run("validation: exactly one field from [opts.Set opts.Unset opts.RenameTo] should be present", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
+		opts.Set = nil
 		assertOptsInvalidJoinedErrors(t, opts, errExactlyOneOf("AlterContactOptions", "Set", "Unset", "RenameTo"))
 	})
 
 	t.Run("validation: valid identifier for [opts.RenameTo] if set", func(t *testing.T) {
-		opts := defaultOpts()
-		// TODO: fill me
+		opts := &AlterContactOptions{
+			name:     id,
+			RenameTo: &emptyAccountObjectIdentifier,
+		}
 		assertOptsInvalidJoinedErrors(t, opts, ErrInvalidObjectIdentifier)
 	})
 
 	t.Run("validation: at least one of the fields [opts.Set.Email opts.Set.Comment] should be set", func(t *testing.T) {
-		opts := defaultOpts()
-		// TODO: fill me
+		opts := &AlterContactOptions{
+			name: id,
+			Set:  &ContactSet{},
+		}
 		assertOptsInvalidJoinedErrors(t, opts, errAtLeastOneOf("AlterContactOptions.Set", "Email", "Comment"))
 	})
 
 	t.Run("validation: at least one of the fields [opts.Unset.Comment] should be set", func(t *testing.T) {
-		opts := defaultOpts()
-		// TODO: fill me
+		opts := &AlterContactOptions{
+			name:  id,
+			Unset: &ContactUnset{},
+		}
 		assertOptsInvalidJoinedErrors(t, opts, errAtLeastOneOf("AlterContactOptions.Unset", "Comment"))
 	})
 
 	t.Run("basic", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
-		assertOptsValidAndSQLEquals(t, opts, "TODO: fill me")
+		assertOptsValidAndSQLEquals(t, opts, `ALTER NOTIFICATION CONTACT %s SET EMAIL = 'new@example.com'`, id.FullyQualifiedName())
 	})
 
 	t.Run("all options", func(t *testing.T) {
-		opts := defaultOpts()
-		// TODO: fill me
-		assertOptsValidAndSQLEquals(t, opts, "TODO: fill me")
+		opts := &AlterContactOptions{
+			name:     id,
+			IfExists: Bool(true),
+			Set: &ContactSet{
+				Email:   String("updated@example.com"),
+				Comment: String("updated comment"),
+			},
+		}
+		assertOptsValidAndSQLEquals(t, opts, `ALTER NOTIFICATION CONTACT IF EXISTS %s SET EMAIL = 'updated@example.com' COMMENT = 'updated comment'`, id.FullyQualifiedName())
 	})
 }
 
@@ -106,7 +118,6 @@ func TestContacts_Drop(t *testing.T) {
 	// Minimal valid DropContactOptions
 	defaultOpts := func() *DropContactOptions {
 		return &DropContactOptions{
-
 			name: id,
 		}
 	}
@@ -117,20 +128,19 @@ func TestContacts_Drop(t *testing.T) {
 	})
 	t.Run("validation: valid identifier for [opts.name]", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
+		opts.name = emptyAccountObjectIdentifier
 		assertOptsInvalidJoinedErrors(t, opts, ErrInvalidObjectIdentifier)
 	})
 
 	t.Run("basic", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
-		assertOptsValidAndSQLEquals(t, opts, "TODO: fill me")
+		assertOptsValidAndSQLEquals(t, opts, `DROP NOTIFICATION CONTACT %s`, id.FullyQualifiedName())
 	})
 
 	t.Run("all options", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
-		assertOptsValidAndSQLEquals(t, opts, "TODO: fill me")
+		opts.IfExists = Bool(true)
+		assertOptsValidAndSQLEquals(t, opts, `DROP NOTIFICATION CONTACT IF EXISTS %s`, id.FullyQualifiedName())
 	})
 }
 
@@ -147,14 +157,13 @@ func TestContacts_Show(t *testing.T) {
 
 	t.Run("basic", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
-		assertOptsValidAndSQLEquals(t, opts, "TODO: fill me")
+		assertOptsValidAndSQLEquals(t, opts, `SHOW NOTIFICATION CONTACTS`)
 	})
 
 	t.Run("all options", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
-		assertOptsValidAndSQLEquals(t, opts, "TODO: fill me")
+		opts.Like = &Like{Pattern: String("test_contact")}
+		assertOptsValidAndSQLEquals(t, opts, `SHOW NOTIFICATION CONTACTS LIKE 'test_contact'`)
 	})
 }
 
@@ -164,7 +173,6 @@ func TestContacts_Describe(t *testing.T) {
 	// Minimal valid DescribeContactOptions
 	defaultOpts := func() *DescribeContactOptions {
 		return &DescribeContactOptions{
-
 			name: id,
 		}
 	}
@@ -175,19 +183,17 @@ func TestContacts_Describe(t *testing.T) {
 	})
 	t.Run("validation: valid identifier for [opts.name]", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
+		opts.name = emptyAccountObjectIdentifier
 		assertOptsInvalidJoinedErrors(t, opts, ErrInvalidObjectIdentifier)
 	})
 
 	t.Run("basic", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
-		assertOptsValidAndSQLEquals(t, opts, "TODO: fill me")
+		assertOptsValidAndSQLEquals(t, opts, `DESCRIBE NOTIFICATION CONTACT %s`, id.FullyQualifiedName())
 	})
 
 	t.Run("all options", func(t *testing.T) {
 		opts := defaultOpts()
-		// TODO: fill me
-		assertOptsValidAndSQLEquals(t, opts, "TODO: fill me")
+		assertOptsValidAndSQLEquals(t, opts, `DESCRIBE NOTIFICATION CONTACT %s`, id.FullyQualifiedName())
 	})
 }
