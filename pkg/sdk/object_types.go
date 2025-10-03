@@ -73,6 +73,7 @@ const (
 	ObjectTypeComputePool          ObjectType = "COMPUTE POOL"
 	ObjectTypeAggregationPolicy    ObjectType = "AGGREGATION POLICY"
 	ObjectTypeAuthenticationPolicy ObjectType = "AUTHENTICATION POLICY"
+	ObjectTypeContact              ObjectType = "NOTIFICATION CONTACT"
 	ObjectTypeHybridTable          ObjectType = "HYBRID TABLE"
 	ObjectTypeImageRepository      ObjectType = "IMAGE REPOSITORY"
 	ObjectTypeProjectionPolicy     ObjectType = "PROJECTION POLICY"
@@ -153,6 +154,7 @@ var allObjectTypes = []ObjectType{
 	ObjectTypeComputePool,
 	ObjectTypeAggregationPolicy,
 	ObjectTypeAuthenticationPolicy,
+	ObjectTypeContact,
 	ObjectTypeHybridTable,
 	ObjectTypeImageRepository,
 	ObjectTypeProjectionPolicy,
@@ -231,6 +233,7 @@ func objectTypeSingularToPluralMap() map[ObjectType]PluralObjectType {
 		ObjectTypeComputePool:             PluralObjectTypeComputePool,
 		ObjectTypeAggregationPolicy:       PluralObjectTypeAggregationPolicies,
 		ObjectTypeAuthenticationPolicy:    PluralObjectTypeAuthenticationPolicies,
+		ObjectTypeContact:                 PluralObjectTypeContacts,
 		ObjectTypeHybridTable:             PluralObjectTypeHybridTables,
 		ObjectTypeImageRepository:         PluralObjectTypeImageRepositories,
 		ObjectTypeProjectionPolicy:        PluralObjectTypeProjectionPolicies,
@@ -270,6 +273,7 @@ func (o ObjectType) GetObjectIdentifier(fullyQualifiedName string) ObjectIdentif
 		ObjectTypeShare,
 		ObjectTypeUser,
 		ObjectTypeWarehouse,
+		ObjectTypeContact,
 	}
 	if slices.Contains(accountObjectIdentifiers, o) {
 		return NewAccountObjectIdentifier(fullyQualifiedName)
@@ -344,6 +348,7 @@ const (
 	PluralObjectTypeComputePool              PluralObjectType = "COMPUTE POOLS"
 	PluralObjectTypeAggregationPolicies      PluralObjectType = "AGGREGATION POLICIES"
 	PluralObjectTypeAuthenticationPolicies   PluralObjectType = "AUTHENTICATION POLICIES"
+	PluralObjectTypeContacts                 PluralObjectType = "NOTIFICATION CONTACTS"
 	PluralObjectTypeHybridTables             PluralObjectType = "HYBRID TABLES"
 	PluralObjectTypeImageRepositories        PluralObjectType = "IMAGE REPOSITORIES"
 	PluralObjectTypeProjectionPolicies       PluralObjectType = "PROJECTION POLICIES"

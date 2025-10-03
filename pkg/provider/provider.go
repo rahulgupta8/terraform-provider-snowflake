@@ -420,6 +420,7 @@ func getResources() map[string]*schema.Resource {
 		"snowflake_api_integration":                                              resources.APIIntegration(),
 		"snowflake_authentication_policy":                                        resources.AuthenticationPolicy(),
 		"snowflake_compute_pool":                                                 resources.ComputePool(),
+		"snowflake_contact":                                                      resources.Contact(),
 		"snowflake_cortex_search_service":                                        resources.CortexSearchService(),
 		"snowflake_current_account":                                              resources.CurrentAccount(),
 		"snowflake_current_organization_account":                                 resources.CurrentOrganizationAccount(),
